@@ -1,0 +1,69 @@
+#! /usr/bin/python3
+
+# steg - steganography
+# hide a text within an image LSB of RGB
+#
+# 28 February, 2022
+# Kevin Shaw
+
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation version 2.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+
+import text2bin
+import encodedecode
+import sys
+import argparse
+import os.path
+
+# parse arguments
+p = argparse.ArgumentParser(description='Hide text within an image or extract hidden text from an image')
+p.add_argument('image', action='store', help='Image file name to decode or to serve as the mule')
+#p.add_argument('-d', '--decode', dest='decode', action='store_true', help='Decode an image.')
+p.add_argument('-m', '--message', dest='text', action='store', help='Message to encode, as ascii text')
+p.add_argument('-c', '--copy', action='store_true')
+args = p.parse_args()
+image = args.image
+#decode = args.decode
+text = args.text
+
+def prettybin(binary):
+    i = 0
+    out = ''
+    while i < len(binary):
+        if i > 0 and i % 8 == 0:
+            print(out, end=" ")
+            out = ""
+            out += binary[i]
+        else:
+            out += binary[i]
+        i += 1
+
+if os.path.isfile(image):
+    if text == None:
+        #decode
+        binary = encodedecode.decode(image)
+        print(text2bin.b2t(binary))
+    else:
+        #encode
+        if text == '-':
+            for line in sys.stdin:
+                text += line
+        binary = text2bin.t2b(text)
+        img = encodedecode.encode(binary, image)
+        if args.copy:
+            img = encodedecode.write(image)
+else:
+    print("The image file (image) does not exist.")
