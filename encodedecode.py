@@ -5,7 +5,7 @@ bits = 0
 
 def encode(binary, image):
     with Image.open(image) as img:
-        if (len(binary) > img.width * img.height * 3):
+        if len(binary) > img.width * img.height * 3:
             print("Your image file is not large enough to hide your text.")
         else:
             b, x, y, i, j = 0, 0, 0, 0, 0
@@ -35,14 +35,14 @@ def encode(binary, image):
 def nulterminated(bit):
     global bits
 
-    if (len(bytes) < 8):
+    if len(bytes) < 8:
         bytes.insert(8, bit)
         bits += 1
         return False
     else:
-        if (bytes.count('0') == 8 and bits % 8 == 0):
+        if bytes.count('0') == 8 and bits % 8 == 0:
             return True
-        elif (bits % 8 == 0):
+        elif bits % 8 == 0:
             bytes.clear()
             bytes.insert(8, bit)
             bits += 1
@@ -56,13 +56,13 @@ def decode(image):
     binary = ''
     with Image.open(image) as img:
         x, y, i = 0, 0, 0
-        while (y < img.height):
-            while (x < img.width):
+        while y < img.height:
+            while x < img.width:
                 color = img.getpixel((x,y))
-                while (i < 3):
+                while i < 3:
                     b = bin(color[i])[-1]
                     binary += b
-                    if (nulterminated(b)):
+                    if nulterminated(b):
                         return(binary)
                     i += 1
                 i = 0
