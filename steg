@@ -24,6 +24,7 @@
 
 import text2bin
 import encodedecode
+import filenames
 import sys
 import argparse
 import os.path
@@ -31,13 +32,16 @@ import os.path
 # parse arguments
 p = argparse.ArgumentParser(description='Hide text within an image or extract hidden text from an image')
 p.add_argument('image', action='store', help='Image file name to decode or to serve as the mule')
-#p.add_argument('-d', '--decode', dest='decode', action='store_true', help='Decode an image.')
-p.add_argument('-m', '--message', dest='text', action='store', help='Message to encode, as ascii text')
 p.add_argument('-c', '--copy', action='store_true')
+p.add_argument('-m', '--message', dest='text', action='store', help='Message to encode, as ascii text')
+p.add_argument('-o', '--out', dest='out', action='store', default='a.png', help='File name for output image, default is a.png.')
+p.add_argument('-z', '--compression', dest='z', action='store', default='6', choices=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], help='PNG compression level, 0 no compression to 9 best compression (slowest), default is 6.')
 args = p.parse_args()
 image = args.image
 #decode = args.decode
 text = args.text
+out = args.out
+z = int(args.z)
 
 def prettybin(binary):
     i = 0
@@ -58,11 +62,12 @@ if os.path.isfile(image):
         print(text2bin.b2t(binary))
     else:
         #encode
+        outfile = filenames.makeoutname(out)
         if text == '-':
             for line in sys.stdin:
                 text += line
         binary = text2bin.t2b(text)
-        img = encodedecode.encode(binary, image)
+        img = encodedecode.encode(binary, image, outfile, z)
         if args.copy:
             img = encodedecode.write(image)
 else:

@@ -3,7 +3,7 @@ from PIL import Image
 bytes = []
 bits = 0
 
-def encode(binary, image):
+def encode(binary, image, outfile, compression):
     with Image.open(image) as img:
         if len(binary) > img.width * img.height * 3:
             print("Your image file is not large enough to hide your text.")
@@ -29,7 +29,7 @@ def encode(binary, image):
 
                 i = 0
                 x += 1
-            img.save("tmp.png", compress_level=9)
+            img.save(outfile, compress_level=compression)
             return(0)
 
 def nulterminated(bit):
