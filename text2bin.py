@@ -42,10 +42,10 @@ def b2t(binary):
         b = binary[i:i + 8]
         if i < 16:
             if i == 0 and b != '00000110':
-                print("This file does not appear to have an encoded message from the first byte.")
+                print("This file does not appear to have an encoded message (from the first byte).")
                 return 
             if i == 8 and b != '00010101':
-                print("This file does not appear to have an encoded message from the second byte.")
+                print("This file does not appear to have an encoded message (from the second byte).")
                 return                 
         else:
             if b != '00000000':
