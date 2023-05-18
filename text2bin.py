@@ -1,18 +1,36 @@
+import sys
 import ascii
 
 # returns input text as nul terminated binary string
 def t2b(text):
     bin = "0000011000010101"
     i = 0
+    chrnumber = 0
+    linenumber = 0
+    
     while i < len(text):
         char = text[i]
         if char == '\\':
             i += 1
             char += text[i]
-            bin += ascii.a2b[text[i]]
+            if char == '\\n':
+                linenumber += 1
+                chrnumber = 0
+            else:
+                chrnumber += 1
+            try:
+                bin += ascii.a2b[text[i]]
+            except KeyError:
+                msg = f'Invalid ASCII character ({char}) in input, line {linenumber}, character {chrnumber}.'
+                sys.exit(msg)
             i += 1
-        else:       
-            bin += ascii.a2b[text[i]]
+        else:
+            chrnumber += 1
+            try:
+                bin += ascii.a2b[text[i]]
+            except:
+                msg = f'Invalid ASCII character ({char}) in input, line {linenumber}, character {chrnumber}.'
+                sys.exit(msg)
             i += 1
     bin += ascii.a2b['NUL']
     return bin
